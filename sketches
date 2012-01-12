@@ -1,0 +1,44 @@
+bitsyntax(
+  "Size:32/integer, Frame:Size/binary, _/binary", function(vars) {
+    //...
+  },
+  // ...
+  true, function() {
+    //...
+  });
+
+// Now we'd like to avoid making this a value then applying
+// it. Possibly we can compile it and cache it at the call site (but
+// then, how do we identify it if there's more than one?).
+
+// NB in general we will want to compile groups of patterns, because
+// there is more opportunity for optimisation when compiling a group
+// of patterns into one procedure. (Just doing things in sequence may
+// result in repeated computations).
+
+// Construct dispatcher:
+
+var matcher = bitsyntax(
+  "Size:32/integer, Frame:Size/binary, _/binary", function(vars) {
+    //...
+  },
+  // ...
+  true, function() {
+    //...
+  });
+matcher.match(binary, freevars);
+// In this case the compiled patterns can be memoised, all together, in matcher.
+
+bitsyntax(
+  "Size:32/integer, Frame:Size/binary, _/binary", function(vars) {
+    //...
+  },
+  // ...
+  true, function() {
+    //...
+  }).match(binary) // -> vars
+
+// Getting free variables from the environment. This or very similar is basically the only way: the Function constructor refers only to the global scope.
+function foo() {
+  return new Function('bar', "return function() { return bar + 'ooo' };")(eval("bar"));
+}
