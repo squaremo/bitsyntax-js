@@ -4,6 +4,7 @@
 GLOBALS_IGNORE=val
 
 node_modules/mocha: node_modules/%:
+	-mkdir -p node_modules
 	npm install $(@F)
 
 test: node_modules/mocha
