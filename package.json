@@ -1,0 +1,18 @@
+{
+  "author": "Michael Bridgen <mikeb@squaremobius.net>",
+  "name": "bitsyntax",
+  "description": "Binary matching a la Erlang",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/squaremo/bitsyntax-js.git"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "engines": {
+    "node": ">0.4"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
