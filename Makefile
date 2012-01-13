@@ -8,4 +8,4 @@ node_modules/mocha: node_modules/%:
 	npm install $(@F)
 
 test: node_modules/mocha
-	./node_modules/.bin/mocha --globals $(GLOBALS_IGNORE) -u tdd
+	./node_modules/.bin/mocha -R list --globals $(GLOBALS_IGNORE) -u tdd
