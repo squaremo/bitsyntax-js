@@ -76,6 +76,56 @@ suite("Integer",
 
       });
 
+suite("Float",
+      function() {
+
+        function close(desc, pattern, bytes, num, precision) {
+          // Assume variable to test is 'n'
+          return test(desc, function() {
+            var m = match(pattern, new Buffer(bytes), {});
+            //console.log("Math.abs(" + num + " - " + m.n + ")");
+            assert.ok(Math.abs(num - m.n) < precision);
+          });
+        }
+
+        function matches(size, flags, testcases) {
+          testcases.forEach(function(testcase) {
+            return close(quote(pattern_str('float', size, flags)),
+                         [v('n', size, flags.concat('float'))],
+                         testcase[0], testcase[1], 0.00001); // close enough
+          });
+        }
+
+        // test cases largely constructed in Erlang using e.g.,
+        // Pi = math:pi(), <<Pi:32/float>>.
+
+        matches(32, [], [
+          [ [64,73,15,219], Math.PI ],
+          [ [0, 0, 0, 0], 0.0 ]
+        ]);
+
+        matches(64, [], [
+          [ [64,9,33,251,84,68,45,24], Math.PI ],
+          [ [0, 0, 0, 0, 0, 0, 0, 0], 0.0 ]
+        ]);
+
+        matches(32, ['little'], [
+          [ [219, 15, 73, 64], Math.PI ],
+          [ [0, 0, 0, 0], 0.0 ]
+        ]);
+
+        matches(64, ['little'], [
+          [ [ 24, 45, 68, 84, 251, 33, 9, 64 ] , Math.PI ],
+          [ [0, 0, 0, 0, 0, 0, 0, 0], 0.0 ]
+        ]);
+
+        matches(4, ['unit:8'], [
+          [ [64,73,15,219], Math.PI ],
+          [ [0, 0, 0, 0], 0.0 ]
+        ]);
+
+      });
+
 suite("Binary",
       function() {
 
