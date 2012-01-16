@@ -4,11 +4,9 @@ Gives a compact syntax for parsing binary data, derived from [Erlang's
 bit syntax](http://www.erlang.org/doc/programming_examples/bit_syntax.html#id64858).
 
     > var pattern = bitsyntax.parse('len:8/integer, string:len/binary');
-    > var bound = bitsyntax.match(pattern, new Buffer([4, 65,66,67,68]));
-    > bound.frame
+    > var bound = bitsyntax.match(pattern, new Buffer([4, 0x41,0x42,0x43,0x44]));
+    > bound.string
     <Buffer 41 42 43 44>
-    > bound.rest
-    <Buffer 00 00 00>
 
 In the above, the first 8 bits of the input are treated as an unsigned
 integer (by default, see the "signedness" specifier below) and
