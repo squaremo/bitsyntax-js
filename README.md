@@ -4,17 +4,9 @@ Gives a compact syntax for parsing binary data, derived from [Erlang's
 bit syntax](http://www.erlang.org/doc/programming_examples/bit_syntax.html#id64858).
 
     > var pattern = bitsyntax.parse('len:8/integer, string:len/binary');
-    > var bound = bitsyntax.match(pattern, new Buffer([4, 0x41,0x42,0x43,0x44]));
+    > var bound = bitsyntax.match(pattern, new Buffer([4, 0x41, 0x42, 0x43, 0x44]));
     > bound.string
     <Buffer 41 42 43 44>
-
-In the above, the first 8 bits of the input are treated as an unsigned
-integer (by default, see the "signedness" specifier below) and
-assigned to the variable `len`; then the next `len` bytes are treated
-as a binary (i.e., a byte buffer) and assigned to the variable
-`string`. The return value of `match` is an object mapping variable
-names to matched values, or the boolean `false` meaning the match did
-not succeed.
 
 A typical use of this is parsing byte streams from sockets. For example,
 size-prefixed frames:
@@ -34,24 +26,23 @@ size-prefixed frames:
 
 ## Patterns
 
-Patterns are given as strings, with a comma-separated series of
-segments. Each segment matches a particular kind of value, which
-currently may be an integer or a binary (buffer). At the moment these
-must be aligned on byte boundaries (Erlang's bit syntax doesn't have
-this constraint in general).
+Patterns are sequences of segments, each matching a value. Segments
+have the general form
 
-Each segment has at least a literal value or variable name, a may have
-a size. It may also have additional specifiers giving the type, the
-endianness or signedness of an integer segment, and the unit in which
-the size is given as a number of bits. These specifiers appear after a
-forward-slash and are separated with hyphens. Here's an example of a
-segment with specifiers:
+     value:size/type_specifier_list
 
-    'foo:4/integer-little-unit:8-signed'
+The size and type specifier list may be omitted, giving three
+variations:
 
-This will match thirty-two bits (size 4 * unit 8) and parse them as a
-little-endian, signed integer. The full complement of specifiers is
-explained in the following.
+    value
+    value:size
+    value/type_specifier_list
+
+The type specifier list is a list of keywords separated by
+hyphens. Type specifiers are described below.
+
+Patterns are generally supplied as strings, with a comma-separated
+series of segments.
 
 ### Variable or value
 
@@ -89,13 +80,13 @@ If the size is omitted and the type is integer, the size defaults to
 match all remaining bytes in the input; such a segment may only be
 used at the end of a pattern.
 
-The size may also be given as an integer variable matched prior in the
-pattern, as in the example given at the top.
+The size may also be given as an integer variable matched earlier in
+the pattern, as in the example given at the top.
 
-### Type
+### Type name specifier
 
-One of `integer`, `binary`, (and coming soon) `float`. If not given, the
-default is `integer`.
+One of `integer`, `binary`, `float`. If not given, the default is
+`integer`.
 
 An integer is a big- or little-endian, signed or unsigned
 integer. Integers up to 32 bits are supported. Signed integers are
@@ -109,7 +100,7 @@ of the input buffer being returned, so beware mutation.
 A float is a 32- or 64-bit IEEE754 floating-point value (this is
 the standard JavaScript uses, as do Java and Erlang).
 
-### Endianness
+### Endianness specifier
 
 Integers may be big- or little-endian; this refers to which 'end' of
 the bytes making up the integer are most significant. In network
@@ -121,8 +112,48 @@ A specifier of `big` means the integer will be parsed as big-endian,
 and `little` means the integer will be parsed as little-endian. The
 default is big-endian.
 
-### Signedness
+### Signedness specifier
 
 Integer segments may include a specifier of `signed` or `unsigned`. An
 unsigned integer is parsed as two's complement format. The default is
 unsigned.
+
+## Examples
+
+In the following the matched bytes are given in array notation for
+convenience. Bear in mind that `match()` actually takes a buffer for
+the bytes to match against. The phrase "returns X as Y" or "binds X as
+Y" means the return value is an object with the key X mapped to a
+value Y.
+
+    54
+
+Matches the single byte `54`.
+
+    54:32
+
+Matches the bytes [0,0,0,54].
+
+    54:32/little
+
+Matches the bytes [54,0,0,0].
+
+    54:4/unit:8
+
+Matches the bytes [0,0,0,54].
+
+    int:32/signed
+
+Matches a binary of four bytes, and returns a signed 32-bit integer as
+`int`.
+
+    len:16, str:len/binary
+
+Matches a binary of `2 + len` bytes, and returns an unsigned 16-bit
+integer as `len` and a buffer of length `len` as `str`.
+
+    len:16, _:len/binary, rest/binary
+
+Matches a binary of at least `2 + len` bytes, binds an unsigned
+16-bit integer as `len`, ignores the next `len` bytes, and binds the
+remaining (possibly zero-length) binary as `rest`.
