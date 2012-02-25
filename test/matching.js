@@ -1,156 +1,131 @@
 var match = require('../lib/interp').match;
-var v = require('../lib/pattern').variable;
-var rest = require('../lib/pattern').rest;
+var parse = require('../lib/parse').parse;
+var compile = require('../lib/compile').compile;
 var assert = require('assert');
 
-function good(desc, pattern, bytes, bound) {
-  return test(desc, function() {
-    assert.deepEqual(bound, match(pattern, new Buffer(bytes), {}));
-  });
-}
 
-function pattern_str(type, size, flags) {
-  var p = "n:" + size + '/' + type;
-  if (flags.length > 0) {
-    p += '-'+(flags.join('-'));
-  }
-  return p;
-}
+var INT_TESTS = [
+    ['n:8',
+     [[[255], 255]]],
+    ['n:8/signed',
+     [[[255], -1]]],
+    ['n:1/unit:8',
+     [[[129], 129]]],
+    ['n:1/unit:8-signed',
+     [[[129], -127]]],
 
-function quote(str) {
-  return ["'", "'"].join(str);
-}
+    ['n:16',
+     [[[1, 255], 511]]],
+    ['n:16/signed',
+     [[[255, 65], -191]]],
+    ['n:16/little',
+     [[[255, 1], 511]]],
+    ['n:16/signed-little',
+     [[[65, 255], -191]]],
+
+    ['n:32',
+     [[[45, 23, 97, 102], 756506982]]],
+    ['n:32/signed',
+     [[[245, 23, 97, 102], -183017114]]],
+    ['n:32/little',
+     [[[245, 23, 97, 102], 1717639157]]],
+    ['n:32/signed-little',
+     [[[245, 23, 97, 129], -2124343307]]],
+    
+    ['n:4/signed-little-unit:8',
+     [[[245, 23, 97, 129], -2124343307]]]
+];
 
 suite("Integer",
       function() {
 
-        function matches(size, flags, testcases) {
-          testcases.forEach(function(testcase) {
-            return good(quote(pattern_str('integer', size, flags)),
-                        [v('n', size, flags)],
-                        testcase[0], {'n': testcase[1]});
+        INT_TESTS.forEach(function(p) {
+          var pattern = parse(p[0]);
+          var cpattern = compile(p[0]);
+          p[1].forEach(function(tc) {
+            test(p[0], function() {
+              assert.deepEqual({n: tc[1]}, match(pattern, new Buffer(tc[0])));
+            });
+            test(p[0], function() {
+              assert.deepEqual({n: tc[1]}, cpattern(new Buffer(tc[0])));
+            });
           });
-        }
-
-        matches(8, [], [
-          [ [255], 255 ]
-        ]);
-        matches(8, ['signed'], [
-          [ [255], -1 ]
-        ]);
-        matches(1, ['unit:8'], [
-          [ [129], 129 ],
-        ]);
-        matches(1, ['unit:8', 'signed'], [
-          [ [129], -127 ]
-        ]);
-
-        matches(16, [], [
-          [ [1, 255], 511 ]
-        ]);
-        matches(16, ['signed'], [
-          [ [255, 65], -191 ]
-        ]);
-        matches(16, ['little'], [
-          [ [255, 1], 511 ]
-        ]);
-        matches(16, ['signed', 'little'], [
-          [ [65, 255], -191 ]
-        ]);
-
-        matches(32, [], [
-          [ [45, 23, 97, 102], 756506982 ]
-        ]);
-        matches(32, ['signed'], [
-          [ [245, 23, 97, 102], -183017114 ]
-        ]);
-        matches(32, ['little'], [
-          [ [245, 23, 97, 102], 1717639157 ]
-        ]);
-        matches(32, ['signed', 'little'], [
-          [ [245, 23, 97, 129], -2124343307 ]
-        ]);
-        matches(4, ['unit:8', 'signed', 'little'], [
-          [ [245, 23, 97, 129], -2124343307 ]
-        ]);
-
+        });
       });
+
+
+// test cases largely constructed in Erlang using e.g.,
+// Pi = math:pi(), <<Pi:32/float>>.
+FLOAT_TESTS = [
+  ['n:32/float',
+   [[[64,73,15,219], Math.PI],
+    [[0, 0, 0, 0], 0.0 ]]],
+
+  ['n:64/float',
+   [[[64,9,33,251,84,68,45,24], Math.PI],
+    [[0, 0, 0, 0, 0, 0, 0, 0], 0.0]]],
+
+  ['n:32/float-little',
+   [[[219, 15, 73, 64], Math.PI],
+    [[0, 0, 0, 0], 0.0]]],
+
+  ['n:64/float-little',
+   [[[24, 45, 68, 84, 251, 33, 9, 64], Math.PI],
+    [[0, 0, 0, 0, 0, 0, 0, 0], 0.0]]],
+  
+  ['n:4/float-unit:8',
+   [[[64,73,15,219], Math.PI],
+    [[0, 0, 0, 0], 0.0]]]
+];
 
 suite("Float",
       function() {
-
-        function close(desc, pattern, bytes, num, precision) {
-          // Assume variable to test is 'n'
-          return test(desc, function() {
-            var m = match(pattern, new Buffer(bytes), {});
-            //console.log("Math.abs(" + num + " - " + m.n + ")");
-            assert.ok(Math.abs(num - m.n) < precision);
+        var precision = 0.00001;
+        FLOAT_TESTS.forEach(function(p) {
+          var pattern = parse(p[0]);
+          var cpattern = compile(p[0]);
+          p[1].forEach(function(tc) {
+            test(p[0], function() {
+              var m = match(pattern, new Buffer(tc[0]));
+              assert.ok(m.n !== undefined);
+              assert.ok(Math.abs(tc[1] - m.n) < precision);
+            });
+            test(p[0], function() {
+              var m = cpattern(new Buffer(tc[0]));
+              assert.ok(m.n !== undefined);
+              assert.ok(Math.abs(tc[1] - m.n) < precision);
+            });
           });
-        }
-
-        function matches(size, flags, testcases) {
-          testcases.forEach(function(testcase) {
-            return close(quote(pattern_str('float', size, flags)),
-                         [v('n', size, flags.concat('float'))],
-                         testcase[0], testcase[1], 0.00001); // close enough
-          });
-        }
-
-        // test cases largely constructed in Erlang using e.g.,
-        // Pi = math:pi(), <<Pi:32/float>>.
-
-        matches(32, [], [
-          [ [64,73,15,219], Math.PI ],
-          [ [0, 0, 0, 0], 0.0 ]
-        ]);
-
-        matches(64, [], [
-          [ [64,9,33,251,84,68,45,24], Math.PI ],
-          [ [0, 0, 0, 0, 0, 0, 0, 0], 0.0 ]
-        ]);
-
-        matches(32, ['little'], [
-          [ [219, 15, 73, 64], Math.PI ],
-          [ [0, 0, 0, 0], 0.0 ]
-        ]);
-
-        matches(64, ['little'], [
-          [ [ 24, 45, 68, 84, 251, 33, 9, 64 ] , Math.PI ],
-          [ [0, 0, 0, 0, 0, 0, 0, 0], 0.0 ]
-        ]);
-
-        matches(4, ['unit:8'], [
-          [ [64,73,15,219], Math.PI ],
-          [ [0, 0, 0, 0], 0.0 ]
-        ]);
-
+        });
       });
+
+BINARY_TESTS = [
+  ['n:0/unit:8-binary', []],
+  ['n:1/unit:8-binary', [93]],
+  ['n:5/unit:8-binary', [1, 2, 3, 4, 5]],
+  ['n:32/unit:1-binary', [255, 254, 253, 252]]
+];
 
 suite("Binary",
       function() {
-
-        function matches(testcases) {
-          testcases.forEach(function(testcase) {
-            var size = testcase[0];
-            var flags = ['unit:'+testcase[1]];
-            var desc = pattern_str('binary', size, flags);
-            var descrest = [desc, "_/binary"].join(", ");
-            var plusgarbage = testcase[2].concat([6, 7, 9, 255]);
-            flags.push('binary');
-            good(quote(desc),
-                 [v('n', size, flags)],
-                 testcase[2], {'n': new Buffer(testcase[2])});
-            good(quote(descrest),
-                 [v('n', size, flags), rest()],
-                 plusgarbage, {'n': new Buffer(testcase[2])});
-                });
-        }
-
-        matches([
-          // size, unit, bytes ( expected -> bytes back in a buffer )
-          [ 0, 8, [] ],
-          [ 1, 8, [93] ],
-          [ 5, 8, [1, 2, 3, 4, 5] ],
-          [ 32, 1, [255, 254, 253, 252] ]
-        ]);
+        BINARY_TESTS.forEach(function(p) {
+          var pattern = parse(p[0]);
+          var cpattern = compile(p[0]);
+          var prest = p[0] + ', _/binary';
+          var patternrest = parse(prest);
+          var cpatternrest = compile(prest);
+          test(p[0], function() {
+            assert.deepEqual({n: new Buffer(p[1])},
+                             match(pattern, new Buffer(p[1])));
+            assert.deepEqual({n: new Buffer(p[1])},
+                             cpattern(new Buffer(p[1])));
+          });
+          test(prest, function() {
+            var plusgarbage = p[1].concat([5, 98, 23, 244]);
+            assert.deepEqual({n: new Buffer(p[1])},
+                             match(patternrest, new Buffer(plusgarbage)));
+            assert.deepEqual({n: new Buffer(p[1])},
+                             cpatternrest(new Buffer(plusgarbage)));
+          });
+        });
       });
