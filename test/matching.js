@@ -129,3 +129,31 @@ suite("Binary",
           });
         });
       });
+
+var VAR_TESTS = [
+  ['size, n:size',
+   [[[8, 5], 5],
+    [[32, 0, 0, 0, 167], 167]]],
+
+  ['size, n:size/binary',
+   [[[2, 5, 6], new Buffer([5, 6])]]],
+
+  ['a, b:a, n:b',
+   [[[8, 32, 0, 0, 2, 100], 612]]]
+];
+
+suite("Environment",
+      function() {
+        VAR_TESTS.forEach(function(p) {
+          var pattern = parse(p[0]);
+          var cpattern = compile(p[0]);
+          p[1].forEach(function(tc) {
+            test(p[0], function() {
+              assert.deepEqual(tc[1], match(pattern, new Buffer(tc[0])).n);
+            });
+            test(p[0], function() {
+              assert.deepEqual(tc[1], cpattern(new Buffer(tc[0])).n);
+            });
+          });
+        });
+      });
