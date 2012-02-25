@@ -3,26 +3,51 @@
 Gives a compact syntax for parsing binary data, derived from [Erlang's
 bit syntax](http://www.erlang.org/doc/programming_examples/bit_syntax.html#id64858).
 
-    > var pattern = bitsyntax.parse('len:8/integer, string:len/binary');
-    > var bound = bitsyntax.match(pattern, new Buffer([4, 0x41, 0x42, 0x43, 0x44]));
+    > var bitsyntax = require('bitsyntax');
+    > var pattern = bitsyntax.compile('len:8/integer, string:len/binary');
+    > var bound = pattern(new Buffer([4, 0x41, 0x42, 0x43, 0x44]));
     > bound.string
     <Buffer 41 42 43 44>
 
-A typical use of this is parsing byte streams from sockets. For example,
-size-prefixed frames:
+A typical use of this is parsing byte streams from sockets. For
+example, size-prefixed frames:
 
     > var framePattern = bitsyntax.parse('len:32/integer, frame:len/binary, rest/binary');
     > socket.on('data', function process(data) {
         var m;
-        if (m = bitsyntax.match(framePattern, data)) {
-          this.emit('frame', m.frame);
+        if (m = framePattern(data)) {
+          emit('frame', m.frame);
           process(m.rest);
         }
         else {
-          // stash the data somewhere and try matching again when more
-          // comes in
+          stashForNextData(data);
         }
       });
+
+## API
+
+### `compile`
+
+Compiles a pattern given as a string to a function that will return
+either a map of bindings, or `false`, given a buffer and optionally an
+environment. The environment contains values for the bound variables
+in the pattern (if there are any).
+
+    > var p = bitsyntax.compile('header:headerSize/binary, rest/binary');
+    > var b = p(new Buffer([1, 2, 3, 4, 5]), {headerSize: 3});
+    > b.header
+    <Buffer 01 02 03>
+
+### `parse` and `match`
+
+In combination, equivalent to compile; may be useful if you want to
+examine the internal structure of patterns.
+
+    > var p = bitsyntax.parse('header:headerSize/binary, rest/binary');
+    > var b = bitsyntax.match(p, new Buffer([1, 2, 3, 4, 5]),
+                              {headerSize: 3});
+    > b.header
+    <Buffer 01 02 03>
 
 ## Patterns
 
@@ -31,7 +56,7 @@ have the general form
 
      value:size/type_specifier_list
 
-The size and type specifier list may be omitted, giving three
+The size and type specifier list may be omitted, giving three extra
 variations:
 
     value
@@ -97,8 +122,8 @@ and 2^53 can be represented, and bitwise operators are only defined on
 A binary is simply a byte buffer; usually this will result in a slice
 of the input buffer being returned, so beware mutation.
 
-A float is a 32- or 64-bit IEEE754 floating-point value (this is
-the standard JavaScript uses, as do Java and Erlang).
+A float is a 32- or 64-bit IEEE754 floating-point value (this is the
+standard JavaScript uses, as do Java and Erlang).
 
 ### Endianness specifier
 
@@ -114,8 +139,8 @@ default is big-endian.
 
 ### Signedness specifier
 
-Integer segments may include a specifier of `signed` or `unsigned`. An
-unsigned integer is parsed as two's complement format. The default is
+Integer segments may include a specifier of `signed` or `unsigned`. A
+signed integer is parsed as two's complement format. The default is
 unsigned.
 
 ## Examples
@@ -123,8 +148,8 @@ unsigned.
 In the following the matched bytes are given in array notation for
 convenience. Bear in mind that `match()` actually takes a buffer for
 the bytes to match against. The phrase "returns X as Y" or "binds X as
-Y" means the return value is an object with the key X mapped to a
-value Y.
+Y" means the return value is an object with value X mapped to the key
+Y.
 
     54
 
@@ -154,6 +179,6 @@ integer as `len` and a buffer of length `len` as `str`.
 
     len:16, _:len/binary, rest/binary
 
-Matches a binary of at least `2 + len` bytes, binds an unsigned
-16-bit integer as `len`, ignores the next `len` bytes, and binds the
+Matches a binary of at least `2 + len` bytes, binds an unsigned 16-bit
+integer as `len`, ignores the next `len` bytes, and binds the
 remaining (possibly zero-length) binary as `rest`.
