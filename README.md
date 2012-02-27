@@ -3,26 +3,26 @@
 Gives a compact syntax for parsing binary data, derived from [Erlang's
 bit syntax](http://www.erlang.org/doc/programming_examples/bit_syntax.html#id64858).
 
-    > var bitsyntax = require('bitsyntax');
-    > var pattern = bitsyntax.compile('len:8/integer, string:len/binary');
-    > var bound = pattern(new Buffer([4, 0x41, 0x42, 0x43, 0x44]));
-    > bound.string
-    <Buffer 41 42 43 44>
+    var bitsyntax = require('bitsyntax');
+    var pattern = bitsyntax.compile('len:8/integer, string:len/binary');
+    var bound = pattern(new Buffer([4, 0x41, 0x42, 0x43, 0x44]));
+    bound.string
+    // => <Buffer 41 42 43 44>
 
 A typical use of this is parsing byte streams from sockets. For
 example, size-prefixed frames:
 
-    > var framePattern = bitsyntax.parse('len:32/integer, frame:len/binary, rest/binary');
-    > socket.on('data', function process(data) {
-        var m;
-        if (m = framePattern(data)) {
-          emit('frame', m.frame);
-          process(m.rest);
-        }
-        else {
-          stashForNextData(data);
-        }
-      });
+    var framePattern = bitsyntax.compile('len:32/integer, frame:len/binary, rest/binary');
+    socket.on('data', function process(data) {
+      var m;
+      if (m = framePattern(data)) {
+        emit('frame', m.frame);
+        process(m.rest);
+      }
+      else {
+        stashForNextData(data);
+      }
+    });
 
 ## API
 
@@ -33,21 +33,21 @@ either a map of bindings, or `false`, given a buffer and optionally an
 environment. The environment contains values for the bound variables
 in the pattern (if there are any).
 
-    > var p = bitsyntax.compile('header:headerSize/binary, rest/binary');
-    > var b = p(new Buffer([1, 2, 3, 4, 5]), {headerSize: 3});
-    > b.header
-    <Buffer 01 02 03>
+    var p = bitsyntax.compile('header:headerSize/binary, rest/binary');
+    var b = p(new Buffer([1, 2, 3, 4, 5]), {headerSize: 3});
+    b.header
+    // => <Buffer 01 02 03>
 
 ### `parse` and `match`
 
 In combination, equivalent to compile; may be useful if you want to
 examine the internal structure of patterns.
 
-    > var p = bitsyntax.parse('header:headerSize/binary, rest/binary');
-    > var b = bitsyntax.match(p, new Buffer([1, 2, 3, 4, 5]),
+    var p = bitsyntax.parse('header:headerSize/binary, rest/binary');
+    var b = bitsyntax.match(p, new Buffer([1, 2, 3, 4, 5]),
                               {headerSize: 3});
-    > b.header
-    <Buffer 01 02 03>
+    b.header
+    // => <Buffer 01 02 03>
 
 ## Patterns
 
