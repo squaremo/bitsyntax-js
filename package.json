@@ -1,7 +1,7 @@
 {
   "author": "Michael Bridgen <mikeb@squaremobius.net>",
   "name": "bitsyntax",
-  "description": "Binary matching a la Erlang",
+  "description": "Pattern-matching on byte buffers",
   "version": "0.0.1",
   "repository": {
     "type": "git",
