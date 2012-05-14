@@ -1,5 +1,8 @@
 {
-  "author": "Michael Bridgen <mikeb@squaremobius.net>",
+  "author": {
+      "name": "Michael Bridgen",
+      "email": "<mikeb@squaremobius.net>"
+  },
   "name": "bitsyntax",
   "description": "Pattern-matching on byte buffers",
   "version": "0.0.1",
