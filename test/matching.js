@@ -161,7 +161,7 @@ suite("Environment",
 STRING_TESTS = [
   ['"foobar", n:8', "foobarA", 'A'.charCodeAt(0)],
   ['n:8, "foobar", _/binary', "CfoobarGARBAGE", 'C'.charCodeAt(0)],
-  ['"foo bar\\"", n:8, "another"', 'foo bar"Zanother', 'Z'.charCodeAt(0)]
+  ['"foo, :-bar\\"", n:8, "another"', 'foo, :-bar"Zanother', 'Z'.charCodeAt(0)]
 ];
 
 suite("String",
