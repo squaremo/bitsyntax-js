@@ -31,7 +31,7 @@ var INT_TESTS = [
      [[[245, 23, 97, 102], 1717639157]]],
     ['n:32/signed-little',
      [[[245, 23, 97, 129], -2124343307]]],
-    
+
     ['n:4/signed-little-unit:8',
      [[[245, 23, 97, 129], -2124343307]]]
 ];
@@ -72,7 +72,7 @@ FLOAT_TESTS = [
   ['n:64/float-little',
    [[[24, 45, 68, 84, 251, 33, 9, 64], Math.PI],
     [[0, 0, 0, 0, 0, 0, 0, 0], 0.0]]],
-  
+
   ['n:4/float-unit:8',
    [[[64,73,15,219], Math.PI],
     [[0, 0, 0, 0], 0.0]]]
@@ -154,6 +154,23 @@ suite("Environment",
             test(p[0], function() {
               assert.deepEqual(tc[1], cpattern(new Buffer(tc[0])).n);
             });
+          });
+        });
+      });
+
+STRING_TESTS = [
+  ['"foobar", n:8', "foobarA", 'A'.charCodeAt(0)],
+  ['n:8, "foobar", _/binary', "CfoobarGARBAGE", 'C'.charCodeAt(0)],
+  ['"foo bar\\"", n:8, "another"', 'foo bar"Zanother', 'Z'.charCodeAt(0)]
+];
+
+suite("String",
+      function() {
+        STRING_TESTS.forEach(function(p) {
+          var pattern = parse(p[0]);
+          test(p[0], function() {
+            var res = match(pattern, new Buffer(p[1]));
+            assert.equal(res.n, p[2]);
           });
         });
       });
