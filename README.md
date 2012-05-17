@@ -24,6 +24,13 @@ example, size-prefixed frames:
       }
     });
 
+Patterns can also be used to construct binaries from supplied values:
+
+   var spdyDataFrame = require('bitsyntax')
+     .constructor('streamId:32, flags:8, length:24, data/binary');
+
+   spdyDataFrame({streamId:5, flags:0, length:bin.length, data:bin});
+
 ## API
 
 ### `compile`
@@ -48,6 +55,13 @@ examine the internal structure of patterns.
                               {headerSize: 3});
     b.header
     // => <Buffer 01 02 03>
+
+### `constructor`
+
+Takes a pattern and returns a function that will construct a binary
+given values for the variables mentioned in the pattern. Patterns
+supplied to constructors are slightly different to patterns supplied
+for matching, as noted below.
 
 ## Patterns
 
@@ -76,8 +90,13 @@ value. If a variable name is given, the value matched by the segment
 will be bound to that variable name for the rest of the pattern. If a
 literal value is given, the matched value must equal that value.
 
+In constructors, the literal value will be copied into the result
+binary according to the type it is given. A variable name indicates a
+space into which a value supplied to the constructor will be copied.
+
 The special variable name `_` discards the value matched; i.e., it
-simply skips over the appropriate number of bits in the input.
+simply skips over the appropriate number of bits in the input. '_' is
+not allowed in constructors.
 
 ### Size and unit
 
@@ -108,6 +127,11 @@ used at the end of a pattern.
 The size may also be given as an integer variable matched earlier in
 the pattern, as in the example given at the top.
 
+In constructors, numbers will be rounded, masked or padded to fit the
+size and units given; for example, `'256:8'` gives the binary
+`Buffer<00>` because the lowest eight bits are 0; `'255:16` gives the
+binary `Buffer<00 ff>`.
+
 ### Type name specifier
 
 One of `integer`, `binary`, `float`. If not given, the default is
@@ -133,15 +157,30 @@ protocols integers are usually big-endian, meaning the first
 (left-most) byte is the most significant, but this is not always the
 case.
 
-A specifier of `big` means the integer will be parsed as big-endian,
-and `little` means the integer will be parsed as little-endian. The
-default is big-endian.
+A specifier of `big` means the integer will be parsed (or written into
+the result) as big-endian, and `little` means the integer will be
+parsed or written as little-endian. The default is big-endian.
 
 ### Signedness specifier
 
 Integer segments may include a specifier of `signed` or `unsigned`. A
 signed integer is parsed as two's complement format. The default is
 unsigned.
+
+Signedness is ignored in constructors.
+
+### Literal strings
+
+A quoted string appearing in a pattern is a shorthand for the bytes in
+its UTF8 encoding. For example,
+
+    "foobar", _/binary
+
+matches any buffer the starts with the bytes `0x66, 0x6f, 0x6f, 0x62,
+0x61, 0x72`.
+
+When used in a constructor, a literal string is copied verbatim into
+the result.
 
 ## Examples
 
