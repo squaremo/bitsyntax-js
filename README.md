@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/squaremo/bitsyntax-js.png)](http://travis-ci.org/squaremo/bitsyntax-js)
 # Byte-wise matching for Node.JS
 
 Gives a compact syntax for parsing binary data, derived from [Erlang's
