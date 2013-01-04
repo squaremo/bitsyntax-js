@@ -42,3 +42,29 @@ bitsyntax(
 function foo() {
   return new Function('bar', "return function() { return bar + 'ooo' };")(eval("bar"));
 }
+
+
+// === Composite buffers
+
+// May help with parsing, and avoiding consing new buffers, although
+// that is pretty cheap if they are small (they are allocated out of
+// 8k shared pools and copy uses memmove. Although, how do those get
+// collected?)
+
+var buf = new Composite(b1, b2, b3);
+
+buf.length // = b1.length + b2.length + b3.length
+buf.readUIntBlah();
+buf.bufferSlice(...);
+
+// and so on.
+
+// === Constructors
+
+// Helpful to use patterns for constructing buffers too
+
+var cons = bs.constructor('a/binary, b/binary');
+var newbuf = cons({a: buf1, b: buf2});
+
+May also be useful to be able to write into a buffer, maybe returning
+the bytes written.
