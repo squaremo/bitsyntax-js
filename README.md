@@ -27,10 +27,10 @@ example, size-prefixed frames:
 
 Patterns can also be used to construct binaries from supplied values:
 
-   var spdyDataFrame = require('bitsyntax')
-     .constructor('streamId:32, flags:8, length:24, data/binary');
+    var spdyDataFrame = require('bitsyntax')
+      .constructor('streamId:32, flags:8, length:24, data/binary');
 
-   spdyDataFrame({streamId:5, flags:0, length:bin.length, data:bin});
+    spdyDataFrame({streamId:5, flags:0, length:bin.length, data:bin});
 
 One or more segments of a pattern may also be supplied in multiple
 arguments, if that is more convenient; this makes it easier to split a
