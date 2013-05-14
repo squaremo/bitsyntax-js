@@ -1,7 +1,8 @@
 # Byte-wise matching for Node.JS
 
-Gives a compact syntax for parsing binary data, derived from [Erlang's
-bit syntax](http://www.erlang.org/doc/programming_examples/bit_syntax.html#id64858).
+Gives a compact syntax for parsing and constructing byte buffers,
+derived from [Erlang's bit
+syntax](http://www.erlang.org/doc/programming_examples/bit_syntax.html#id64858).
 
     var bitsyntax = require('bitsyntax');
     var pattern = bitsyntax.compile('len:8/integer, string:len/binary');
@@ -31,12 +32,19 @@ Patterns can also be used to construct binaries from supplied values:
 
    spdyDataFrame({streamId:5, flags:0, length:bin.length, data:bin});
 
+One or more segments of a pattern may also be supplied in multiple
+arguments, if that is more convenient; this makes it easier to split a
+long pattern over lines:
+
+    var p = bitsyntax.compile('size:8, payload:size/binary',
+                              'rest/binary');
+
 ## API
 
 ### `compile`
 
-Compiles a pattern given as a string to a function that will return
-either a map of bindings, or `false`, given a buffer and optionally an
+Compiles a pattern to a function that will return either a map of
+bindings, or `false`, given a buffer and optionally an
 environment. The environment contains values for the bound variables
 in the pattern (if there are any).
 
@@ -47,10 +55,16 @@ in the pattern (if there are any).
 
 ### `parse` and `match`
 
-In combination, equivalent to compile; may be useful if you want to
+In combination, equivalent to `compile`; may be useful if you want to
 examine the internal structure of patterns.
 
-    var p = bitsyntax.parse('header:headerSize/binary, rest/binary');
+`parse` takes strings as for `compile`, and returns the internal
+representation of the pattern. `match` takes this representation, a
+buffer, and optionally an environment, and returns the bindings or
+false (as with `compile`).
+
+    var p = bitsyntax.parse('header:headerSize/binary',
+                            'rest/binary');
     var b = bitsyntax.match(p, new Buffer([1, 2, 3, 4, 5]),
                               {headerSize: 3});
     b.header
@@ -58,10 +72,15 @@ examine the internal structure of patterns.
 
 ### `constructor`
 
-Takes a pattern and returns a function that will construct a binary
-given values for the variables mentioned in the pattern. Patterns
-supplied to constructors are slightly different to patterns supplied
-for matching, as noted below.
+Takes a pattern and returns a function that will construct a byte
+buffer, given values for the variables mentioned in the pattern.
+
+    var cons = bitsyntax.constructor('size:8, bin/binary');
+    cons({size:6, bin:newBuffer('foobar')});
+    // => <Buffer 06 66 6f 6f 62 61 72>
+
+Patterns supplied to constructors are slightly different to patterns
+supplied for matching, as noted below.
 
 ## Patterns
 
@@ -134,8 +153,8 @@ binary `Buffer<00 ff>`.
 
 ### Type name specifier
 
-One of `integer`, `binary`, `float`. If not given, the default is
-`integer`.
+One of `integer`, `binary`, `string`, `float`. If not given, the
+default is `integer`.
 
 An integer is a big- or little-endian, signed or unsigned
 integer. Integers up to 32 bits are supported. Signed integers are
@@ -145,6 +164,8 @@ and 2^53 can be represented, and bitwise operators are only defined on
 
 A binary is simply a byte buffer; usually this will result in a slice
 of the input buffer being returned, so beware mutation.
+
+A string is a UTF8 string consisting of the given number of bytes.
 
 A float is a 32- or 64-bit IEEE754 floating-point value (this is the
 standard JavaScript uses, as do Java and Erlang).
@@ -176,10 +197,10 @@ its UTF8 encoding. For example,
 
     "foobar", _/binary
 
-matches any buffer the starts with the bytes `0x66, 0x6f, 0x6f, 0x62,
+matches any buffer that starts with the bytes `0x66, 0x6f, 0x6f, 0x62,
 0x61, 0x72`.
 
-When used in a constructor, a literal string is copied verbatim into
+When used in a constructor, a quoted string is copied verbatim into
 the result.
 
 ## Examples
