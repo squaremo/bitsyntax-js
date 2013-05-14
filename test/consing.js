@@ -1,7 +1,8 @@
 var assert = require('assert');
-var parse = require('../lib/parse').parse;
-var construct = require('../lib/constructor').construct;
-var write = require('../lib/constructor').write;
+var parse = require('../').parse;
+var construct = require('../').construct;
+var constructor = require('../').constructor;
+var write = require('../').write;
 
 TEST_CASES = [
   ['n:8', {n:255}, [255]],
@@ -29,6 +30,12 @@ suite("Construction", function() {
       buf = buf.slice(7, end);
       assert.deepEqual(c[2], bufferToArray(buf));
     });
+    test(c[0], function() {
+      var cons = constructor(c[0]);
+      var buf = cons(c[1]);
+      assert.deepEqual(c[2], bufferToArray(buf));
+    });
+
   });
 
 });

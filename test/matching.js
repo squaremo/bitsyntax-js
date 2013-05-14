@@ -1,6 +1,6 @@
-var match = require('../lib/interp').match;
-var parse = require('../lib/parse').parse;
-var compile = require('../lib/compile').compile;
+var match = require('../').match;
+var parse = require('../').parse;
+var compile = require('../').compile;
 var assert = require('assert');
 
 
