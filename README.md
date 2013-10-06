@@ -4,40 +4,48 @@ Gives a compact syntax for parsing and constructing byte buffers,
 derived from [Erlang's bit
 syntax](http://www.erlang.org/doc/programming_examples/bit_syntax.html#id64858).
 
-    var bitsyntax = require('bitsyntax');
-    var pattern = bitsyntax.compile('len:8/integer, string:len/binary');
-    var bound = pattern(new Buffer([4, 0x41, 0x42, 0x43, 0x44]));
-    bound.string
-    // => <Buffer 41 42 43 44>
+```js
+var bitsyntax = require('bitsyntax');
+var pattern = bitsyntax.compile('len:8/integer, string:len/binary');
+var bound = pattern(new Buffer([4, 0x41, 0x42, 0x43, 0x44]));
+bound.string
+// => <Buffer 41 42 43 44>
+```
 
 A typical use of this is parsing byte streams from sockets. For
 example, size-prefixed frames:
 
-    var framePattern = bitsyntax.compile('len:32/integer, frame:len/binary, rest/binary');
-    socket.on('data', function process(data) {
-      var m;
-      if (m = framePattern(data)) {
-        emit('frame', m.frame);
-        process(m.rest);
-      }
-      else {
-        stashForNextData(data);
-      }
-    });
+```js
+var framePattern = bitsyntax.compile('len:32/integer, frame:len/binary, rest/binary');
+socket.on('data', function process(data) {
+  var m;
+  if (m = framePattern(data)) {
+    emit('frame', m.frame);
+    process(m.rest);
+  }
+  else {
+    stashForNextData(data);
+  }
+});
+```
 
 Patterns can also be used to construct binaries from supplied values:
 
-    var spdyDataFrame = require('bitsyntax')
-      .constructor('streamId:32, flags:8, length:24, data/binary');
+```js
+var spdyDataFrame = require('bitsyntax')
+  .constructor('streamId:32, flags:8, length:24, data/binary');
 
-    spdyDataFrame({streamId:5, flags:0, length:bin.length, data:bin});
+spdyDataFrame({streamId:5, flags:0, length:bin.length, data:bin});
+```
 
 One or more segments of a pattern may also be supplied in multiple
 arguments, if that is more convenient; this makes it easier to split a
 long pattern over lines:
 
-    var p = bitsyntax.compile('size:8, payload:size/binary',
-                              'rest/binary');
+```js
+var p = bitsyntax.compile('size:8, payload:size/binary',
+                          'rest/binary');
+```
 
 ## API
 
@@ -48,10 +56,12 @@ bindings, or `false`, given a buffer and optionally an
 environment. The environment contains values for the bound variables
 in the pattern (if there are any).
 
-    var p = bitsyntax.compile('header:headerSize/binary, rest/binary');
-    var b = p(new Buffer([1, 2, 3, 4, 5]), {headerSize: 3});
-    b.header
-    // => <Buffer 01 02 03>
+```js
+var p = bitsyntax.compile('header:headerSize/binary, rest/binary');
+var b = p(new Buffer([1, 2, 3, 4, 5]), {headerSize: 3});
+b.header
+// => <Buffer 01 02 03>
+```
 
 ### `parse` and `match`
 
@@ -63,21 +73,25 @@ representation of the pattern. `match` takes this representation, a
 buffer, and optionally an environment, and returns the bindings or
 false (as with `compile`).
 
-    var p = bitsyntax.parse('header:headerSize/binary',
-                            'rest/binary');
-    var b = bitsyntax.match(p, new Buffer([1, 2, 3, 4, 5]),
-                              {headerSize: 3});
-    b.header
-    // => <Buffer 01 02 03>
+```js
+var p = bitsyntax.parse('header:headerSize/binary',
+                        'rest/binary');
+var b = bitsyntax.match(p, new Buffer([1, 2, 3, 4, 5]),
+                          {headerSize: 3});
+b.header
+// => <Buffer 01 02 03>
+```
 
 ### `constructor`
 
 Takes a pattern and returns a function that will construct a byte
 buffer, given values for the variables mentioned in the pattern.
 
-    var cons = bitsyntax.constructor('size:8, bin/binary');
-    cons({size:6, bin:newBuffer('foobar')});
-    // => <Buffer 06 66 6f 6f 62 61 72>
+```js
+var cons = bitsyntax.constructor('size:8, bin/binary');
+cons({size:6, bin:newBuffer('foobar')});
+// => <Buffer 06 66 6f 6f 62 61 72>
+```
 
 Patterns supplied to constructors are slightly different to patterns
 supplied for matching, as noted below.
