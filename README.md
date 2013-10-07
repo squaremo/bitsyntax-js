@@ -64,6 +64,16 @@ b.header
 // => <Buffer 01 02 03>
 ```
 
+A matcher will return `false` if the supplied buffer does not match
+the pattern; for example, if it has too few bytes, or a literal is not
+present.
+
+```js
+var p = bitsyntax.matcher('"foo:", str/binary');
+p(new Buffer("bar:humbug"));
+// => false
+```
+
 ### `parse` and `match`
 
 When composed, equivalent to `matcher`; may be useful if you want to
@@ -72,7 +82,7 @@ examine the internal structure of patterns.
 `parse` takes strings as for `matcher`, and returns the internal
 representation of the pattern. `match` takes this representation, a
 buffer, and optionally an environment, and returns the bindings or
-false (as with `matcher`).
+`false` (as with `matcher`).
 
 ```js
 var p = bitsyntax.parse('header:headerSize/binary',
@@ -90,12 +100,39 @@ buffer, given values for the variables mentioned in the pattern.
 
 ```js
 var cons = bitsyntax.builder('size:8, bin/binary');
-cons({size:6, bin:newBuffer('foobar')});
+cons({size:6, bin:new Buffer('foobar')});
 // => <Buffer 06 66 6f 6f 62 61 72>
 ```
 
 Patterns supplied to builders are slightly different to patterns
 supplied for matching, as noted below.
+
+### `build`
+
+Takes a parsed pattern and a map of variable values, and returns a
+buffer. As with `match`, may be useful to debug patterns.
+
+```js
+var pattern = bitsyntax.parse('size:8, bin/binary');
+bitsyntax.build(pattern, {size:6, bin: new Buffer('foobar')});
+// => <Buffer 06 66 6f 6f 62 61 72>
+```
+
+### `write`
+
+Writes variable values into a buffer, at an offset, according to the
+parsed pattern given. Returns the finishing offset, i.e., the supplied
+offset plus the number of bytes written.
+
+```js
+var pattern = bitsyntax.parse('size:8, bin/binary');
+var buf = new Buffer(7);
+bitsyntax.write(buf, 0, pattern,
+                {size:6, bin: new Buffer('foobar')});
+// => 7
+buf
+// => <Buffer 06 66 6f 6f 62 61 72>
+```
 
 ## Patterns
 

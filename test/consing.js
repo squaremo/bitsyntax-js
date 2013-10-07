@@ -1,6 +1,6 @@
 var assert = require('assert');
 var parse = require('../').parse;
-var construct = require('../').construct;
+var build = require('../').build;
 var builder = require('../').builder;
 var write = require('../').write;
 
@@ -22,7 +22,7 @@ suite("Construction", function() {
   TEST_CASES.forEach(function(c) {
     var p = parse(c[0]);
     test(c[0], function() {
-      assert.deepEqual(c[2], bufferToArray(construct(p, c[1])));
+      assert.deepEqual(c[2], bufferToArray(build(p, c[1])));
     });
     test(c[0], function() {
       var buf = new Buffer(1024);
