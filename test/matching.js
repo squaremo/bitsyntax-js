@@ -1,6 +1,6 @@
 var match = require('../').match;
 var parse = require('../').parse;
-var compile = require('../').compile;
+var compile = require('../').matcher;
 var assert = require('assert');
 
 

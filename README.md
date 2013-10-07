@@ -6,9 +6,9 @@ syntax](http://www.erlang.org/doc/programming_examples/bit_syntax.html#id64858).
 
 ```js
 var bitsyntax = require('bitsyntax');
-var pattern = bitsyntax.compile('len:8/integer, string:len/binary');
+var pattern = bitsyntax.matcher('len:8/integer, str:len/binary');
 var bound = pattern(new Buffer([4, 0x41, 0x42, 0x43, 0x44]));
-bound.string
+bound.str
 // => <Buffer 41 42 43 44>
 ```
 
@@ -16,7 +16,7 @@ A typical use of this is parsing byte streams from sockets. For
 example, size-prefixed frames:
 
 ```js
-var framePattern = bitsyntax.compile('len:32/integer, frame:len/binary, rest/binary');
+var framePattern = bitsyntax.matcher('len:32/integer, frame:len/binary, rest/binary');
 socket.on('data', function process(data) {
   var m;
   if (m = framePattern(data)) {
@@ -29,11 +29,12 @@ socket.on('data', function process(data) {
 });
 ```
 
-Patterns can also be used to construct binaries from supplied values:
+Patterns can also be used to construct byte buffers from supplied
+values:
 
 ```js
 var spdyDataFrame = require('bitsyntax')
-  .constructor('streamId:32, flags:8, length:24, data/binary');
+  .builder('streamId:32, flags:8, length:24, data/binary');
 
 spdyDataFrame({streamId:5, flags:0, length:bin.length, data:bin});
 ```
@@ -43,21 +44,21 @@ arguments, if that is more convenient; this makes it easier to split a
 long pattern over lines:
 
 ```js
-var p = bitsyntax.compile('size:8, payload:size/binary',
+var p = bitsyntax.matcher('size:8, payload:size/binary',
                           'rest/binary');
 ```
 
 ## API
 
-### `compile`
+### `matcher`
 
-Compiles a pattern to a function that will return either a map of
-bindings, or `false`, given a buffer and optionally an
-environment. The environment contains values for the bound variables
-in the pattern (if there are any).
+Compiles a pattern as a string (or strings), to a function that will
+return either a map of bindings, or `false`, given a buffer and
+optionally an environment. The environment contains values for the
+bound variables in the pattern (if there are any).
 
 ```js
-var p = bitsyntax.compile('header:headerSize/binary, rest/binary');
+var p = bitsyntax.matcher('header:headerSize/binary, rest/binary');
 var b = p(new Buffer([1, 2, 3, 4, 5]), {headerSize: 3});
 b.header
 // => <Buffer 01 02 03>
@@ -65,13 +66,13 @@ b.header
 
 ### `parse` and `match`
 
-In combination, equivalent to `compile`; may be useful if you want to
+When composed, equivalent to `matcher`; may be useful if you want to
 examine the internal structure of patterns.
 
-`parse` takes strings as for `compile`, and returns the internal
+`parse` takes strings as for `matcher`, and returns the internal
 representation of the pattern. `match` takes this representation, a
 buffer, and optionally an environment, and returns the bindings or
-false (as with `compile`).
+false (as with `matcher`).
 
 ```js
 var p = bitsyntax.parse('header:headerSize/binary',
@@ -82,18 +83,18 @@ b.header
 // => <Buffer 01 02 03>
 ```
 
-### `constructor`
+### `builder`
 
 Takes a pattern and returns a function that will construct a byte
 buffer, given values for the variables mentioned in the pattern.
 
 ```js
-var cons = bitsyntax.constructor('size:8, bin/binary');
+var cons = bitsyntax.builder('size:8, bin/binary');
 cons({size:6, bin:newBuffer('foobar')});
 // => <Buffer 06 66 6f 6f 62 61 72>
 ```
 
-Patterns supplied to constructors are slightly different to patterns
+Patterns supplied to builders are slightly different to patterns
 supplied for matching, as noted below.
 
 ## Patterns
@@ -123,13 +124,13 @@ value. If a variable name is given, the value matched by the segment
 will be bound to that variable name for the rest of the pattern. If a
 literal value is given, the matched value must equal that value.
 
-In constructors, the literal value will be copied into the result
-binary according to the type it is given. A variable name indicates a
-space into which a value supplied to the constructor will be copied.
+When used in a builder, the literal value will be copied into the
+buffer according to the type it is given. A variable name indicates a
+slot into which a value supplied to the builder will be copied.
 
 The special variable name `_` discards the value matched; i.e., it
 simply skips over the appropriate number of bits in the input. '_' is
-not allowed in constructors.
+not allowed in builder patterns.
 
 ### Size and unit
 
@@ -160,10 +161,10 @@ used at the end of a pattern.
 The size may also be given as an integer variable matched earlier in
 the pattern, as in the example given at the top.
 
-In constructors, numbers will be rounded, masked or padded to fit the
-size and units given; for example, `'256:8'` gives the binary
-`Buffer<00>` because the lowest eight bits are 0; `'255:16` gives the
-binary `Buffer<00 ff>`.
+In builders, numbers will be rounded, masked or padded to fit the size
+and units given; for example, `'256:8'` gives the binary `Buffer<00>`
+because the lowest eight bits are 0; `'255:16` gives the binary
+`Buffer<00 ff>`.
 
 ### Type name specifier
 
@@ -202,7 +203,7 @@ Integer segments may include a specifier of `signed` or `unsigned`. A
 signed integer is parsed as two's complement format. The default is
 unsigned.
 
-Signedness is ignored in constructors.
+Signedness is ignored in builders.
 
 ### Literal strings
 
@@ -214,8 +215,8 @@ its UTF8 encoding. For example,
 matches any buffer that starts with the bytes `0x66, 0x6f, 0x6f, 0x62,
 0x61, 0x72`.
 
-When used in a constructor, a quoted string is copied verbatim into
-the result.
+When used in a builder, a quoted string is copied verbatim into the
+result.
 
 ## Examples
 

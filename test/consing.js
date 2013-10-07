@@ -1,7 +1,7 @@
 var assert = require('assert');
 var parse = require('../').parse;
 var construct = require('../').construct;
-var constructor = require('../').constructor;
+var builder = require('../').builder;
 var write = require('../').write;
 
 TEST_CASES = [
@@ -31,7 +31,7 @@ suite("Construction", function() {
       assert.deepEqual(c[2], bufferToArray(buf));
     });
     test(c[0], function() {
-      var cons = constructor(c[0]);
+      var cons = builder(c[0]);
       var buf = cons(c[1]);
       assert.deepEqual(c[2], bufferToArray(buf));
     });
