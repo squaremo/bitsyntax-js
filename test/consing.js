@@ -12,6 +12,9 @@ TEST_CASES = [
 
   ['n:8, s/binary', {n: 255, s: new Buffer("foobar")}, [255, 0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72]],
   ['n:8, "foobar", m:8', {n: 255, m:0}, [255, 0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72, 0]],
+  ['n:8, s:n/binary', {n:6, s: new Buffer('foobar')}, [6, 0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72]],
+  ['n:8, s:n/binary', {n:4, s: new Buffer('foobar')}, [4, 0x66, 0x6f, 0x6f, 0x62]],
+  ['n:size', {n:4, size:8}, [4]]
 ];
 
 function bufferToArray(buf) {

@@ -113,7 +113,7 @@ Takes a parsed pattern and a map of variable values, and returns a
 buffer. As with `match`, may be useful to debug patterns.
 
 ```js
-var pattern = bitsyntax.parse('size:8, bin/binary');
+var pattern = bitsyntax.parse('size:8, bin:size/binary');
 bitsyntax.build(pattern, {size:6, bin: new Buffer('foobar')});
 // => <Buffer 06 66 6f 6f 62 61 72>
 ```
@@ -193,10 +193,11 @@ multiple of 8.
 If the size is omitted and the type is integer, the size defaults to
 8. If the size is omitted and the type is binary, the segment will
 match all remaining bytes in the input; such a segment may only be
-used at the end of a pattern.
+used at the end of a pattern, when matching.
 
 The size may also be given as an integer variable matched earlier in
-the pattern, as in the example given at the top.
+the pattern, as in the example given at the top. When constructing, a
+size may be a variable referring to the supplied environment.
 
 In builders, numbers will be rounded, masked or padded to fit the size
 and units given; for example, `'256:8'` gives the binary `Buffer<00>`
