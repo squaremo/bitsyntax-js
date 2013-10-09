@@ -19,7 +19,7 @@
     "node": ">=0.6"
   },
   "dependencies": {
-    "buffer-more-ints": "0.0.1"
+    "buffer-more-ints": "0.0.2"
   },
   "devDependencies": {
     "pegjs": "0.7.x",
