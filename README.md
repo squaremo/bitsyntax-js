@@ -1,5 +1,7 @@
 # Byte-wise matching for Node.JS
 
+[![Build Status](https://travis-ci.org/squaremo/bitsyntax-js.png?branch=master)](https://travis-ci.org/squaremo/bitsyntax-js)
+
 Gives a compact syntax for parsing and constructing byte buffers,
 derived from [Erlang's bit
 syntax](http://www.erlang.org/doc/programming_examples/bit_syntax.html#id64858).
