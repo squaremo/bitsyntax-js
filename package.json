@@ -12,14 +12,17 @@
   },
   "main": "./index",
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "prepublish": "make all"
   },
   "engines": {
     "node": ">=0.6"
   },
   "dependencies": {
-    "pegjs": "~0.7",
-    "buffer-more-ints": ""
+    "buffer-more-ints": "0.0.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "pegjs": "0.7.x",
+    "mocha": "0.9.x"
+  }
 }

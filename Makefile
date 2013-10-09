@@ -1,11 +1,11 @@
-.PHONY: test
+.PHONY: test all
 
-# Current node leaks a variable 'val' in Buffer.readInt16LE
-GLOBALS_IGNORE=val
+GRAMMAR=lib/grammar.pegjs
 
-node_modules/mocha: node_modules/%:
-	-mkdir -p node_modules
-	npm install $(@F)
+all: lib/parser.js
 
-test: node_modules/mocha
-	./node_modules/.bin/mocha -R list --globals $(GLOBALS_IGNORE) -u tdd
+lib/parser.js:
+	./node_modules/pegjs/bin/pegjs $(GRAMMAR) $@
+
+test: lib/parser.js
+	./node_modules/.bin/mocha -R list -u tdd
