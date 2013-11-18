@@ -56,8 +56,8 @@ var p = bitsyntax.matcher('size:8, payload:size/binary',
 
 Compiles a pattern as a string (or strings), to a function that will
 return either a map of bindings, or `false`, given a buffer and
-optionally an environment. The environment contains values for the
-bound variables in the pattern (if there are any).
+optionally an environment. The environment contains values for bound
+variables in the pattern (if there are any).
 
 ```js
 var p = bitsyntax.matcher('header:headerSize/binary, rest/binary');
@@ -71,8 +71,8 @@ the pattern; for example, if it has too few bytes, or a literal is not
 present.
 
 ```js
-var p = bitsyntax.matcher('"foo:", str/binary');
-p(new Buffer("bar:humbug"));
+var p = bitsyntax.matcher('"foo=", str/binary');
+p(new Buffer("bar=humbug"));
 // => false
 ```
 
@@ -161,7 +161,9 @@ series of segments.
 The first part of a segment gives a variable name or a literal
 value. If a variable name is given, the value matched by the segment
 will be bound to that variable name for the rest of the pattern. If a
-literal value is given, the matched value must equal that value.
+literal value is given, the matched value must equal that value. If a
+variable's value is given in the environment, the matched value must
+equal the provided value.
 
 When used in a builder, the literal value will be copied into the
 buffer according to the type it is given. A variable name indicates a
@@ -255,8 +257,8 @@ its UTF8 encoding. For example,
 matches any buffer that starts with the bytes `0x66, 0x6f, 0x6f, 0x62,
 0x61, 0x72`.
 
-When used in a builder, a quoted string is copied verbatim into the
-result.
+When used in a builder, a quoted string is copied into the result as
+the bytes of its UTF8 encoding.
 
 ## Examples
 
@@ -297,3 +299,8 @@ integer as `len` and a buffer of length `len` as `str`.
 Matches a binary of at least `2 + len` bytes, binds an unsigned 16-bit
 integer as `len`, ignores the next `len` bytes, and binds the
 remaining (possibly zero-length) binary as `rest`.
+
+    s:8, key:s/binary, value/binary
+
+When given the environment `{s:6, key: "foobar"}`, will match a binary
+starting with [6, 0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72, ...].
