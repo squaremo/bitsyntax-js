@@ -5,7 +5,7 @@
   },
   "name": "bitsyntax",
   "description": "Pattern-matching on byte buffers",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": {
     "type": "git",
     "url": "git://github.com/squaremo/bitsyntax-js.git"
