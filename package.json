@@ -1,7 +1,7 @@
 {
   "author": {
-      "name": "Michael Bridgen",
-      "email": "<mikeb@squaremobius.net>"
+    "name": "Michael Bridgen",
+    "email": "<mikeb@squaremobius.net>"
   },
   "name": "bitsyntax",
   "description": "Pattern-matching on byte buffers",
@@ -20,10 +20,11 @@
     "node": ">=0.6"
   },
   "dependencies": {
-    "buffer-more-ints": "0.0.2"
+    "buffer-more-ints": "0.0.2",
+    "debug": "^2.0.0"
   },
   "devDependencies": {
-    "pegjs": "0.7.x",
-    "mocha": "1.x"
+    "mocha": "1.x",
+    "pegjs": "0.7.x"
   }
 }
