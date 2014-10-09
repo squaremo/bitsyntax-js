@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "buffer-more-ints": "0.0.2",
-    "debug": "^2.0.0"
+    "debug": "~2.0.0"
   },
   "devDependencies": {
     "mocha": "1.x",
