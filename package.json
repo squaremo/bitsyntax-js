@@ -23,7 +23,7 @@
     "buffer-more-ints": "0.0.2"
   },
   "devDependencies": {
-    "pegjs": "0.7.x",
+    "pegjs": "0.8.x",
     "mocha": "1.x"
   }
 }
