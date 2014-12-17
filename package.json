@@ -15,7 +15,6 @@
   "scripts": {
     "test": "make test",
     "prepublish": "make all"
-	"postinstall" : "make all"
   },
   "engines": {
     "node": ">=0.6"
