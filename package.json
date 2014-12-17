@@ -20,10 +20,10 @@
     "node": ">=0.6"
   },
   "dependencies": {
+	"pegjs": "0.8.x",
     "buffer-more-ints": "0.0.2"
   },
   "devDependencies": {
-    "pegjs": "0.8.x",
     "mocha": "1.x"
   }
 }
