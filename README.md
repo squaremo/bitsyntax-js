@@ -318,6 +318,10 @@ Matches the buffer [48, 48, 49, 49, 48, 48, 48, 49,
 48, 48, 49, 49, 48, 48, 49, 49], 
   result is `{d:"123"}`
 
+    a:10/string-hex
+
+Matches the buffer `Buffer([0x36, 0x64, 0x36, 0x65, 0x36, 0x66, 0x33, 0x31, 0x33, 0x32])` or `Buffer([54, 100, 54, 101, 54, 102, 51, 49, 51, 50])` or `Buffer('6d6e6f3132')`, result is `{a: "mno12"}`
+
     a:6/string-left-zero
 
 `bitsyntax.build(bitsyntax.parse("a:6/string-left-zero"), {a: "12"})` result is  buffer [48, 48, 48, 48, 49, 50], equivalent of `new Buffer("000012")`
