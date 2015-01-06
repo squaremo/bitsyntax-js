@@ -307,17 +307,17 @@ remaining (possibly zero-length) binary as `rest`.
 When given the environment `{s:6, key: "foobar"}`, will match a binary
 starting with [6, 0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72, ...].
 
-  a:4/string, b:4/string-hex, c:3/bcd
+    a:4/string, b:4/string-hex, c:3/bcd
 
-Matches the buffer [97, 98, 99, 100, 51, 48, 51, 49, 0x00, 0x12, 0x34], result is {a:"abcd", b: "01", c: 1234}
+Matches the buffer [97, 98, 99, 100, 51, 48, 51, 49, 0x00, 0x12, 0x34], result is `{a:"abcd", b: "01", c: 1234}`
 
-  d:24/string-binary
+    d:24/string-binary
 
 Matches the buffer [48, 48, 49, 49, 48, 48, 48, 49,
 48, 48, 49, 49, 48, 48, 49, 48,
 48, 48, 49, 49, 48, 48, 49, 49], 
-  result is {d:"123"}
+  result is `{d:"123"}`
 
-  a:6/string-left-zero,
+    a:6/string-left-zero
 
-bitsyntax.build(bitsyntax.parse("a:6/string-left-zero"), {a: "12"}) result is  buffer [48, 48, 48, 48, 49, 50], equivalent of new Buffer("000012")
+`bitsyntax.build(bitsyntax.parse("a:6/string-left-zero"), {a: "12"})` result is  buffer [48, 48, 48, 48, 49, 50], equivalent of `new Buffer("000012")`
