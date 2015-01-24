@@ -211,7 +211,7 @@ because the lowest eight bits are 0; `'255:16` gives the binary
 
 ### Type name specifier
 
-One of `integer`, `binary`, `string`, `float`, `string-hex`, `string-binary`, `bcd`. If not given, the
+One of `integer`, `binary`, `string`, `float`, `string-hex`, `string-binary`, `bcd`, `string-z`. If not given, the
 default is `integer`.
 
 An integer is a big- or little-endian, signed or unsigned
