@@ -1,15 +1,30 @@
 {
-  "main": "./index",
-  "scripts": {
-    "test": "make test",
-    "prepublish": "make all",
-	"postinstall": "make all"
-  },
-  "dependencies": {
-	"pegjs": "~0.8.0",
-    "buffer-more-ints": "~0.0.2"
-  },
-  "devDependencies": {
-    "mocha": "~1.21.5"
-  }
+    "author": {
+        "name": "Michael Bridgen",
+        "email": "<mikeb@squaremobius.net>"
+    },
+    "name": "bitsyntax",
+    "description": "Pattern-matching on byte buffers",
+    "license": "MIT",
+    "version": "0.0.4",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/squaremo/bitsyntax-js.git"
+    },
+    "main": "./index",
+    "scripts": {
+        "test": "make test",
+        "prepublish": "make all",
+        "postinstall": "make all"
+    },
+    "engines": {
+        "node": ">=0.6"
+    },
+    "dependencies": {
+        "pegjs": "0.8.x",
+        "buffer-more-ints": "0.0.2"
+    },
+    "devDependencies": {
+        "mocha": "1.x"
+    }
 }
