@@ -325,3 +325,11 @@ Matches the buffer `Buffer([0x36, 0x64, 0x36, 0x65, 0x36, 0x66, 0x33, 0x31, 0x33
     a:6/string-left-zero
 
 `bitsyntax.build(bitsyntax.parse("a:6/string-left-zero"), {a: "12"})` result is  buffer [48, 48, 48, 48, 49, 50], equivalent of `new Buffer("000012")`
+
+	a:4/string-z
+	
+Matches zero terminated string `Buffer([97, 98, 99, 100, 101, 102, 0x00])`, result is `{a: "abcdef"}`
+
+	a:8/binary-z, b:6/binary-z, r/binary
+	
+Matches zero terminated binary `Buffer([97, 98, 99, 100, 101, 102, 0x00, 97, 98, 0x00, 97, 98, 99])`, result is `{a: Buffer([97, 98, 99, 100, 101, 102]), b: Buffer([97, 98]), r: Buffer([97, 98, 99])}`
