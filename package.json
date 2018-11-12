@@ -21,10 +21,11 @@
   },
   "dependencies": {
     "buffer-more-ints": "^1.0",
-    "debug": "~2.0.0"
+    "debug": "~2.6.9",
+    "safe-buffer": "^5.1.2"
   },
   "devDependencies": {
     "mocha": "1.x",
-    "pegjs": "0.7.x"
+    "pegjs": "0.7.0"
   }
 }
