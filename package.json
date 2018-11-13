@@ -20,7 +20,7 @@
     "node": ">=0.8"
   },
   "dependencies": {
-    "buffer-more-ints": "^1.0",
+    "buffer-more-ints": "~1.0.0",
     "debug": "~2.6.9",
     "safe-buffer": "^5.1.2"
   },
