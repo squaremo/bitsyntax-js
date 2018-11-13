@@ -3,6 +3,7 @@ var parse = require('../').parse;
 var compile = require('../').matcher;
 var assert = require('assert');
 
+var Buffer = require('safe-buffer').Buffer;
 
 var INT_TESTS = [
     ['n:8',
