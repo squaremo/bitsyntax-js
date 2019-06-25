@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "buffer-more-ints": "~1.0.0",
-    "debug": "~2.6.9",
+    "debug": "~4.1.1",
     "safe-buffer": "~5.1.2"
   },
   "devDependencies": {
