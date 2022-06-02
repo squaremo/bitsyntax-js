@@ -5,6 +5,8 @@ var assert = require('assert');
 
 var Buffer = require('safe-buffer').Buffer;
 
+Object.prototype.AMQPLIB_ISSUE_453 = 123123123
+
 var INT_TESTS = [
     ['n:8',
      [[[255], 255]]],

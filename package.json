@@ -26,6 +26,6 @@
   },
   "devDependencies": {
     "mocha": "1.x",
-    "pegjs": "0.10.0"
+    "pegjs": "^0.7.0"
   }
 }
