@@ -3,7 +3,7 @@
     "name": "Michael Bridgen",
     "email": "<mikeb@squaremobius.net>"
   },
-  "name": "bitsyntax",
+  "name": "@cressie176/bitsyntax",
   "description": "Pattern-matching on byte buffers",
   "license": "MIT",
   "version": "0.1.0",
