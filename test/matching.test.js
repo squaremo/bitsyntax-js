@@ -1,7 +1,7 @@
 var syntax = require('zunit').syntax;
-var match = require('../').match;
-var parse = require('../').parse;
-var compile = require('../').matcher;
+var match = require('..').match;
+var parse = require('..').parse;
+var compile = require('..').matcher;
 var assert = require('assert');
 
 var Buffer = require('safe-buffer').Buffer;
