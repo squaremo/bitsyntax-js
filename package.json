@@ -6,7 +6,7 @@
   "name": "@cressie176/bitsyntax",
   "description": "Pattern-matching on byte buffers",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "repository": {
     "type": "git",
     "url": "git://github.com/squaremo/bitsyntax-js.git"
