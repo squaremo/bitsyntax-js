@@ -21,11 +21,11 @@
   },
   "dependencies": {
     "buffer-more-ints": "~1.0.0",
-    "debug": "~4.1.1",
+    "debug": "^4.3.4",
     "safe-buffer": "~5.1.2"
   },
   "devDependencies": {
-    "mocha": "1.x",
-    "pegjs": "^0.7.0"
+    "pegjs": "^0.7.0",
+    "zunit": "^3.2.1"
   }
 }
