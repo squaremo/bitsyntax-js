@@ -12,4 +12,4 @@ $(PEGJS):
 	npm install
 
 test: lib/parser.js
-	./node_modules/.bin/mocha --check-leaks -R list -u tdd test/*.js
+	./node_modules/.bin/zUnit

@@ -1,6 +1,8 @@
 # Byte-wise matching for Node.JS
 
-[![Build Status](https://travis-ci.org/squaremo/bitsyntax-js.png?branch=master)](https://travis-ci.org/squaremo/bitsyntax-js)
+[![Node.js CI](https://github.com/acuminous/bitsyntax-js/workflows/Node.js%20CI/badge.svg)](https://github.com/acuminous/bitsyntax-js/actions?query=workflow%3A%22Node.js+CI%22)
+[![NPM version](https://img.shields.io/npm/v/bitsyntax.svg?style=flat-square)](https://www.npmjs.com/package/@acuminous/bitsyntax)
+[![NPM downloads](https://img.shields.io/npm/dm/bitsyntax.svg?style=flat-square)](https://www.npmjs.com/package/@acuminous/bitsyntax)
 
 Gives a compact syntax for parsing and constructing byte buffers,
 derived from [Erlang's bit

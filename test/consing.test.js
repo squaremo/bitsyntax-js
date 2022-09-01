@@ -1,10 +1,13 @@
+var syntax = require('zunit').syntax;
 var assert = require('assert');
-var parse = require('../').parse;
-var build = require('../').build;
-var builder = require('../').builder;
-var write = require('../').write;
+var parse = require('..').parse;
+var build = require('..').build;
+var builder = require('..').builder;
+var write = require('..').write;
 
 var Buffer = require('safe-buffer').Buffer;
+var suite = syntax.describe;
+var test = syntax.it;
 
 TEST_CASES = [
   ['n:8', {n:255}, [255]],

@@ -1,9 +1,14 @@
-var match = require('../').match;
-var parse = require('../').parse;
-var compile = require('../').matcher;
+var syntax = require('zunit').syntax;
+var match = require('..').match;
+var parse = require('..').parse;
+var compile = require('..').matcher;
 var assert = require('assert');
 
 var Buffer = require('safe-buffer').Buffer;
+var suite = syntax.describe;
+var test = syntax.it;
+
+Object.prototype.AMQPLIB_ISSUE_453 = 123123123
 
 var INT_TESTS = [
     ['n:8',
